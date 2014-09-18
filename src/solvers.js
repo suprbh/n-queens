@@ -15,59 +15,69 @@
 
 window.findNRooksSolution = function(n) {
 
-  if(n < 2 || n === undefined) { return null;}
+  if(n === 1) { return [[1]];}
 
   var solution = []; //fixme
-
   //create a new board
-  var board = new Board({n:n});
+  var nRooks = n;
+  var prevRow = [];
+  var prevCol = [];
 
-  var queens = n;
+  var iterator = function(prevRow, prevCol, nRooks, currBoard){
+    if (nRooks === 0){
+      return currBoard;
+    }
 
-  var subRoutine = function(position, noQueens) {
-    var x = position[0];
-    var y = position[1];
-
-    //if we reach the end (x:n, y:n) and run out of queens, push to solution
-    if(x === n-1 && y === n-1) {
-      if(noQueens === 0 ) {
-        solution.push(board);
-      }
-    } else {
-      if(y === n-1) {
-        x++;
-        y = 0;
-      } else {
-        y++;
+    for (var newRow = 0; newRow < n; newRow++){
+      for (var newCol = 0; newCol < n; newCol++){
+        // not in same row || column
+        if(prevRow.indexOf(newRow) < 0 || prevCol.indexOf(newCol) < 0){
+          currBoard.togglePiece(newRow, newCol);
+          //debugger;
+          if(currBoard['hasAnyRowConflicts']() || currBoard['hasAnyColConflicts']()){
+          //if (currBoard.hasAnyRowConflicts() || currBoard.hasAnyColConflicts()){
+            currBoard.togglePiece(newRow, newCol);
+          }else {
+            nRooks--;
+            prevRow.push(newRow);
+            prevCol.push(newCol);
+            return iterator(prevRow, prevCol, nRooks, currBoard);
+          }
+        }
       }
     }
-    // add queen to next position -- 0,1 (going from top-left)
-    board.set(x)[y] = 1;
-    noQueens--;
-    // if added queen does not create row or col conflict
-    if( board.hasAnyRooksConflicts() === false){
-        // call subroutine again to place new queen at next position
-        subRoutine([x,y], noQueens);
-    } else {
-      // remove queen at current position
-      board.set(x)[y] = 0;
-      //increment amount of noQueens
-      noQueens++;
-      // call subroutine with next position and remaining noQueens
-      subRoutine([x,y], noQueens);
-    }
+    return;
   };
 
-  //set a queen in the first position
-  board.set(0)[0] = 1;
-  queens--;
-  //call a subroutine
-    debugger;
-  subRoutine([0,0], queens);
-
+  if (nRooks === 2){
+    //debugger;
+  }
+  for (var i = 0; i < n; i++){
+    for (var j = 0; j < n; j++){
+      nRooks = n;
+      prevRow = [];
+      prevCol = [];
+      var board = new Board({n:n});
+      board.togglePiece(i,j);
+      prevRow.push(i);
+      prevCol.push(j);
+      nRooks--;
+      //return value
+      var result = iterator(prevRow, prevCol, nRooks, board);
+      if (result !== undefined){
+        // check for duplicates
+        if (n===2){
+          //debugger;
+        }
+        if(solution.indexOf(result) < 0){
+          solution.push(result);
+        }
+      }
+    }
+  }
 
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
-  // console.log(solution);
+  console.log(solution);
   return solution;
 };
 
