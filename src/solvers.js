@@ -28,13 +28,16 @@ window.findNRooksSolution = function(n) {
       return currBoard;
     }
 
-    for (var newRow = 0; newRow < n; newRow++){
-      for (var newCol = 0; newCol < n; newCol++){
+    var prevRowLen = prevRow.length;
+    var prevColLen = prevCol.length;
+    for (var newRow = prevRow[prevRowLen-1]+1; newRow < n; newRow++){
+      var y = prevCol[prevColLen-1]+1 < n ? prevCol[prevColLen-1]+1 : 0;
+      for (var newCol = y; newCol < n; newCol++){
         // not in same row || column
         if(prevRow.indexOf(newRow) < 0 || prevCol.indexOf(newCol) < 0){
           currBoard.togglePiece(newRow, newCol);
           //debugger;
-          if(currBoard['hasAnyRowConflicts']() || currBoard['hasAnyColConflicts']()){
+          if(currBoard.hasAnyRooksConflicts()){
           //if (currBoard.hasAnyRowConflicts() || currBoard.hasAnyColConflicts()){
             currBoard.togglePiece(newRow, newCol);
           }else {
@@ -49,11 +52,37 @@ window.findNRooksSolution = function(n) {
     return;
   };
 
-  if (nRooks === 2){
-    //debugger;
-  }
+  var findDuplicates = function(set, newBoard) {
+ //debugger;
+    if(set.length === 0) {
+      return false;
+    }
+    //grab rows of newBoard
+    var newBoardRows = newBoard.rows();
+    //traverse through set
+    for(var i = 0; i < set.length; i++){
+      // get each row of each board in set
+      var setRows = set[i].rows();
+      // compare to row of newBoard
+      var count = 0;
+      for(var j = 0; j < setRows.length; j++) {
+        // if row of newBoard matches board in set (strings)
+        if(setRows[j].toString() === newBoardRows[j].toString()) {
+            count++;
+            if(count === newBoardRows.length){
+              return true;
+            }
+        }
+      }
+    }
+    return false;
+  };
+
   for (var i = 0; i < n; i++){
     for (var j = 0; j < n; j++){
+      if (i===0 && j ===2 && n ===3){
+        //debugger;
+      }
       nRooks = n;
       prevRow = [];
       prevCol = [];
@@ -62,19 +91,17 @@ window.findNRooksSolution = function(n) {
       prevRow.push(i);
       prevCol.push(j);
       nRooks--;
-      //return value
+
       var result = iterator(prevRow, prevCol, nRooks, board);
       if (result !== undefined){
-        // check for duplicates
-        if (n===2){
-          //debugger;
-        }
-        if(solution.indexOf(result) < 0){
+       //if(findDuplicates(solution, result) === false) {
           solution.push(result);
-        }
+       //}
       }
     }
   }
+
+
 
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
   console.log(solution);
@@ -85,7 +112,11 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
+
   var solutionCount = undefined; //fixme
+
+  var solutions = findNRooksSolution(n);
+  solutionCount = solutions.length;
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
