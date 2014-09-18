@@ -14,9 +14,60 @@
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
 
 window.findNRooksSolution = function(n) {
-  var solution = undefined; //fixme
+
+  if(n < 2 || n === undefined) { return null;}
+
+  var solution = []; //fixme
+
+  //create a new board
+  var board = new Board({n:n});
+
+  var queens = n;
+
+  var subRoutine = function(position, noQueens) {
+    var x = position[0];
+    var y = position[1];
+
+    //if we reach the end (x:n, y:n) and run out of queens, push to solution
+    if(x === n-1 && y === n-1) {
+      if(noQueens === 0 ) {
+        solution.push(board);
+      }
+    } else {
+      if(y === n-1) {
+        x++;
+        y = 0;
+      } else {
+        y++;
+      }
+    }
+    // add queen to next position -- 0,1 (going from top-left)
+    board.set(x)[y] = 1;
+    noQueens--;
+    // if added queen does not create row or col conflict
+    if( board.hasAnyRooksConflicts() === false){
+        // call subroutine again to place new queen at next position
+        subRoutine([x,y], noQueens);
+    } else {
+      // remove queen at current position
+      board.set(x)[y] = 0;
+      //increment amount of noQueens
+      noQueens++;
+      // call subroutine with next position and remaining noQueens
+      subRoutine([x,y], noQueens);
+    }
+  };
+
+  //set a queen in the first position
+  board.set(0)[0] = 1;
+  queens--;
+  //call a subroutine
+    debugger;
+  subRoutine([0,0], queens);
+
 
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
+  // console.log(solution);
   return solution;
 };
 
