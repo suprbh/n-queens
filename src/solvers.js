@@ -23,7 +23,8 @@ window.findNRooksSolution = function(n) {
   var prevRow = [];
   var prevCol = [];
 
-  var iterator = function(prevRow, prevCol, nRooks, currBoard){
+
+  var iterator = function(prevRow, prevCol, nRooks, currBoard, solution){
     if (nRooks === 0){
       return currBoard;
     }
@@ -36,15 +37,17 @@ window.findNRooksSolution = function(n) {
         // not in same row || column
         if(prevRow.indexOf(newRow) < 0 || prevCol.indexOf(newCol) < 0){
           currBoard.togglePiece(newRow, newCol);
-          //debugger;
           if(currBoard.hasAnyRooksConflicts()){
-          //if (currBoard.hasAnyRowConflicts() || currBoard.hasAnyColConflicts()){
             currBoard.togglePiece(newRow, newCol);
           }else {
             nRooks--;
             prevRow.push(newRow);
             prevCol.push(newCol);
-            return iterator(prevRow, prevCol, nRooks, currBoard);
+            // fixme return iterator(prevRow, prevCol, nRooks, currBoard);
+            var result = iterator(prevRow, prevCol, nRooks, currBoard,solution);
+            if (result !== undefined){
+              solution.push(result);
+            }
           }
         }
       }
@@ -92,10 +95,10 @@ window.findNRooksSolution = function(n) {
       prevCol.push(j);
       nRooks--;
 
-      var result = iterator(prevRow, prevCol, nRooks, board);
+      var result = iterator(prevRow, prevCol, nRooks, board, solution);
       if (result !== undefined){
        //if(findDuplicates(solution, result) === false) {
-          solution.push(result);
+         // solution.push(result);
        //}
       }
     }

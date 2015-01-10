@@ -6,6 +6,7 @@ describe("Board", function() {
 
 
   var verifyConflictTypes = function(expectedConflicts, matrix){
+    //debugger;
     // The Board() constructor will accept a matrix and build that into a (Backbone) Board object (as defined in Board.js)
     var board = new Board(matrix);
     _.map('row col rooks majorDiagonal minorDiagonal queens'.split(' '), function(conflictType){
@@ -29,6 +30,7 @@ describe("Board", function() {
   });
 
   describe("Board with row conflicts", function() {
+    //debugger;
     verifyConflictTypes(['row', 'rooks', 'queens'], [
       [0, 0, 0, 0],
       [1, 1, 0, 0],
